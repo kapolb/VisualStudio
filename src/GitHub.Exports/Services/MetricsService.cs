@@ -5,10 +5,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using GitHub.Logging;
 using GitHub.Models;
 using GitHub.Services;
 using Octokit;
 using Octokit.Internal;
+using Serilog;
 
 namespace GitHub.App
 {
@@ -16,6 +18,8 @@ namespace GitHub.App
     [PartCreationPolicy(CreationPolicy.NonShared)]
     public class MetricsService : IMetricsService
     {
+        static readonly ILogger log = LogManager.ForContext<MetricsService>();
+
 #if DEBUG
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "We have conditional compilation")]
         static readonly Uri centralUri = new Uri("http://localhost:4000/", UriKind.Absolute);
@@ -39,11 +43,13 @@ namespace GitHub.App
 #if DEBUG && !SEND_DEBUG_METRICS
         public Task PostUsage(UsageModel model)
         {
+            log.Verbose("Post Usage {@Model}", model);
             return Task.CompletedTask;
         }
 #else
         public async Task PostUsage(UsageModel model)
         {
+            log.Verbose("Post Usage {@Model}", model);
             var request = new Request
             {
                 Method = HttpMethod.Post,
