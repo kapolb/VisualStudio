@@ -50,6 +50,7 @@ namespace GitHub.Services
             var usage = await GetCurrentReport(data);
             var property = (MemberExpression)counter.Body;
             var propertyInfo = (PropertyInfo)property.Member;
+            log.Verbose("Increment counter {Name}", propertyInfo.Name);
             var value = (int)propertyInfo.GetValue(usage.Measures);
             propertyInfo.SetValue(usage.Measures, value + 1);
             await service.WriteLocalData(data);
