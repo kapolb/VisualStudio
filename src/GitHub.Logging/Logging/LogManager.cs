@@ -3,11 +3,20 @@ using System.IO;
 using GitHub.Info;
 using Serilog;
 using Serilog.Core;
+using Serilog.Events;
 
 namespace GitHub.Logging
 {
     public static class LogManager
     {
+#if DEBUG
+        private static LogEventLevel DefaultLoggingLevel = LogEventLevel.Information;
+#else
+        private static LogEventLevel DefaultLoggingLevel = LogEventLevel.Debug;
+#endif
+
+        private static LoggingLevelSwitch LoggingLevelSwitch = new LoggingLevelSwitch(DefaultLoggingLevel);
+
         static Logger CreateLogger()
         {
             var logPath = Path.Combine(
@@ -20,11 +29,16 @@ namespace GitHub.Logging
 
             return new LoggerConfiguration()
                 .Enrich.WithThreadId()
-                .MinimumLevel.Verbose()
+                .MinimumLevel.ControlledBy(LoggingLevelSwitch)
                 .WriteTo.File(logPath,
                     fileSizeLimitBytes: null,
                     outputTemplate: outputTemplate)
                 .CreateLogger();
+        }
+
+        static void EnableTraceLogging(bool enable)
+        {
+            LoggingLevelSwitch.MinimumLevel = enable ? LogEventLevel.Verbose : DefaultLoggingLevel;
         }
 
         static Lazy<Logger> Logger { get; } = new Lazy<Logger>(CreateLogger);
