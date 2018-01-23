@@ -116,6 +116,7 @@ namespace GitHub.VisualStudio
     [ProvideService(typeof(IMenuProvider), IsAsyncQueryable = true)]
     [ProvideService(typeof(IGitHubServiceProvider), IsAsyncQueryable = true)]
     [ProvideService(typeof(IUsageTracker), IsAsyncQueryable = true)]
+    [ProvideService(typeof(IPackageSettings), IsAsyncQueryable = true)]
     [ProvideService(typeof(IGitHubToolWindowManager))]
     [Guid(ServiceProviderPackageId)]
     public sealed class ServiceProviderPackage : AsyncPackage, IServiceProviderPackage, IGitHubToolWindowManager
@@ -254,9 +255,9 @@ namespace GitHub.VisualStudio
             }
             else if (serviceType == typeof(IPackageSettings))
             {
-                //await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                var sp = await GetServiceAsync(typeof(SVsServiceProvider)) as IServiceProvider;
-                return new PackageSettings(sp);
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var sp = GetService(typeof(IGitHubServiceProvider)) as IGitHubServiceProvider;
+                return sp.TryGetService(serviceType);
             }
             // go the mef route
             else
