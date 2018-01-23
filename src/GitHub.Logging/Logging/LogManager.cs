@@ -36,9 +36,16 @@ namespace GitHub.Logging
                 .CreateLogger();
         }
 
-        static void EnableTraceLogging(bool enable)
+        public static void EnableTraceLogging(bool enable)
         {
-            LoggingLevelSwitch.MinimumLevel = enable ? LogEventLevel.Verbose : DefaultLoggingLevel;
+            Logger.Value.ForContext(typeof(LogManager)).Information("EnableTraceLogging: {Enable}", enable);
+
+            var logEventLevel = enable ? LogEventLevel.Verbose : DefaultLoggingLevel;
+            if(LoggingLevelSwitch.MinimumLevel != logEventLevel)
+            { 
+                Logger.Value.ForContext(typeof(LogManager)).Information("Logging Level: {LogEventLevel}", logEventLevel);
+                LoggingLevelSwitch.MinimumLevel = logEventLevel;
+            }
         }
 
         static Lazy<Logger> Logger { get; } = new Lazy<Logger>(CreateLogger);
