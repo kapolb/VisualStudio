@@ -13,8 +13,10 @@ using GitHub.Info;
 using GitHub.Logging;
 using GitHub.Models;
 using GitHub.Services;
+using GitHub.Settings;
 using GitHub.ViewModels.GitHubPane;
 using GitHub.VisualStudio.Menus;
+using GitHub.VisualStudio.Settings;
 using GitHub.VisualStudio.UI;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -54,6 +56,8 @@ namespace GitHub.VisualStudio
         {
             LogVersionInformation();
             await base.InitializeAsync(cancellationToken, progress);
+            
+            var packageSettings = await GetServiceAsync(typeof(IPackageSettings)) as IPackageSettings;
 
             await GetServiceAsync(typeof(IUsageTracker));
 
@@ -153,6 +157,7 @@ namespace GitHub.VisualStudio
             AddService(typeof(ILoginManager), CreateService, true);
             AddService(typeof(IMenuProvider), CreateService, true);
             AddService(typeof(IGitHubToolWindowManager), CreateService, true);
+            AddService(typeof(IPackageSettings), CreateService, true);
             return Task.CompletedTask;
         }
 
@@ -246,6 +251,12 @@ namespace GitHub.VisualStudio
             else if (serviceType == typeof(IGitHubToolWindowManager))
             {
                 return this;
+            }
+            else if (serviceType == typeof(IPackageSettings))
+            {
+                //await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var sp = await GetServiceAsync(typeof(SVsServiceProvider)) as IServiceProvider;
+                return new PackageSettings(sp);
             }
             // go the mef route
             else
