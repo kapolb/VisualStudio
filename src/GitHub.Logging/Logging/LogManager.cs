@@ -10,9 +10,9 @@ namespace GitHub.Logging
     public static class LogManager
     {
 #if DEBUG
-        private static LogEventLevel DefaultLoggingLevel = LogEventLevel.Information;
-#else
         private static LogEventLevel DefaultLoggingLevel = LogEventLevel.Debug;
+#else
+        private static LogEventLevel DefaultLoggingLevel = LogEventLevel.Information;
 #endif
 
         private static LoggingLevelSwitch LoggingLevelSwitch = new LoggingLevelSwitch(DefaultLoggingLevel);
