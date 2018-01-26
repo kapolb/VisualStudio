@@ -218,8 +218,6 @@ namespace GitHub.VisualStudio
             if (container != this)
                 return null;
 
-            log.Debug("CreateService {ServiceType}", serviceType);
-
             if (serviceType == typeof(IGitHubServiceProvider))
             {
                 //var sp = await GetServiceAsync(typeof(SVsServiceProvider)) as IServiceProvider;
