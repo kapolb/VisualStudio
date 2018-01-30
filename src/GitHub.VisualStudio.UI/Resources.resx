@@ -404,4 +404,7 @@
   <data name="Options_EnableTraceLoggingText" xml:space="preserve">
     <value>Enable Trace Logging</value>
   </data>
+  <data name="TokenPrompt" xml:space="preserve">
+    <value>Token</value>
+  </data>
 </root>
